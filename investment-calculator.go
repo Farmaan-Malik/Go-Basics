@@ -7,11 +7,13 @@ import (
 	"math"
 )
 
+// constant is a data container whose value, unlike var, can't be changed
+// constant is declared outside of a function making its scope global
+const inflationRate = 6.6
+
 // main function is the entry point of the app and therefore, is executed first
 // Only one main function is allowed per package
 func main() {
-	// constant is a data container whose value, unlike var, can't be changed
-	const inflationRate = 6.6
 
 	// explicit type declaration of a variable
 	var investmentAmount, years float64 = 1000, 10
@@ -32,8 +34,9 @@ func main() {
 	fmt.Print("Expected Return Rate: ")
 	fmt.Scan((&expectedReturnRate))
 
-	futureValue := investmentAmount * math.Pow(1+expectedReturnRate/100, years)
-	realFutureValue := futureValue / math.Pow(1+inflationRate/100, years)
+	futureValue, realFutureValue := calculateFutureValues(investmentAmount, expectedReturnRate, years)
+	// futureValue := investmentAmount * math.Pow(1+expectedReturnRate/100, years)
+	// realFutureValue := futureValue / math.Pow(1+inflationRate/100, years)
 
 	fmt.Print("Future Value-> ")
 	fmt.Println(futureValue)
@@ -41,3 +44,19 @@ func main() {
 	fmt.Print("Real Future Value-> ")
 	fmt.Println(realFutureValue)
 }
+
+func calculateFutureValues(investmentAmount, expectedReturnRate, years float64) (float64, float64) {
+	fv := investmentAmount * math.Pow(1+expectedReturnRate/100, years)
+	rfv := fv / math.Pow(1+inflationRate/100, years)
+	return fv, rfv
+}
+
+// alternatively, you can give the return values names which would then create variables of that name and type
+// this means you no longer need to declare fv and rfv with := , instead you can just use =
+// this also means that you can simply write return and go would know what variables or values to return
+
+// func calculateFutureValues(investmentAmount, expectedReturnRate, years float64) (fv float64, rfv float64) {
+// 	fv = investmentAmount * math.Pow(1+expectedReturnRate/100, years)
+// 	rfv = fv / math.Pow(1+inflationRate/100, years)
+// 	return
+// }
