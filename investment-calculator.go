@@ -24,6 +24,7 @@ func main() {
 
 	// Scan function is used to take user input. &investmentAmount is a pointer to investmentAmount variable
 	// this function will populate the investmentAmount variable with the value typed in by the user
+	// Limitation: You can't (easily) fetch multi-word input values.
 	fmt.Print("Investment Amount: ")
 	fmt.Scan(&investmentAmount)
 	fmt.Print("Years: ")
