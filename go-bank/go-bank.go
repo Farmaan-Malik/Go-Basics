@@ -1,20 +1,22 @@
 package main
 
 import (
-	"errors"
 	"fmt"
-	"os"
-	"strconv"
+
+	"example.com/go-bank/customIo"
+	"example.com/go-bank/interaction"
 )
 
+const filename = "Balance.txt"
+
 func main() {
-	currentBalance, err := readBalance()
+	currentBalance, err := customIo.ReadContent(filename)
 	if err != nil {
 		fmt.Println(err)
 	}
 	var choice int = 0
 	for {
-		initialAsk(&choice)
+		interaction.InitialAsk(&choice)
 		switch choice {
 		case 1:
 			fmt.Println("Your account balance is", currentBalance)
@@ -28,7 +30,7 @@ func main() {
 				currentBalance += amount
 				fmt.Println("Money Deposited successfully")
 				fmt.Println("Your account balance is", currentBalance)
-				err := writeBalance(currentBalance)
+				err := customIo.WriteContent(currentBalance, filename)
 				if err != nil {
 					fmt.Print((err))
 				}
@@ -43,7 +45,7 @@ func main() {
 				currentBalance -= amount
 				fmt.Println("Money Withdrawn successfully")
 				fmt.Println("Your account balance is", currentBalance)
-				err := writeBalance(currentBalance)
+				err := customIo.WriteContent(currentBalance, filename)
 				if err != nil {
 					fmt.Print((err))
 				}
@@ -57,44 +59,4 @@ func main() {
 			fmt.Printf("Please choose a valid option\n")
 		}
 	}
-}
-
-func initialAsk(choice *int) {
-	intro(choice)
-	fmt.Printf("Enter your choice: ")
-	fmt.Scan(choice)
-	fmt.Println("You chose", *choice)
-}
-func intro(choice *int) {
-	if *choice == 0 {
-		fmt.Printf("Welcome to Go bank!\nWhat do you want to do today?\n1.Check balance\n2.Deposit Money\n3.Withdraw Money\n4.Exit\n")
-	} else {
-		fmt.Printf("1.Check balance\n2.Deposit Money\n3.Withdraw Money\n4.Exit\n")
-	}
-}
-func writeBalance(balance float64) error {
-	balanceString := fmt.Sprint(balance)
-	err := os.WriteFile("Balance.txt", []byte(balanceString), 0644)
-	if err != nil {
-		return err
-	}
-	return nil
-
-}
-func readBalance() (balance float64, err error) {
-	data, err := os.ReadFile("Balance.txt")
-	if err != nil {
-		fmt.Print("ERROR: ")
-		err = errors.New("error fetching balance")
-		return 1000, err
-	}
-	dataString := string(data)
-	balance, err = strconv.ParseFloat(dataString, 64)
-	if err != nil {
-		fmt.Print("ERROR: ")
-		err = errors.New("error parsing balance")
-		return 1000, err
-	}
-	return balance, nil
-
 }
