@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"os"
 )
 
 func main() {
@@ -9,13 +11,22 @@ func main() {
 
 	// fmt.Print("Enter your revenue: ")
 	// fmt.Scan(&revenue)
-	printAndScan("Revenue", &revenue)
+	err := printAndScan("Revenue", &revenue)
+	if err != nil {
+		panic(err)
+	}
 	// fmt.Print("Enter your expenses: ")
 	// fmt.Scan(&expenses)
-	printAndScan("Expenses", &expenses)
+	err = printAndScan("Expenses", &expenses)
+	if err != nil {
+		panic(err)
+	}
 	// fmt.Print("Enter tax rate: ")
 	// fmt.Scan(&taxRate)
-	printAndScan("Tax Rate", &taxRate)
+	err = printAndScan("Tax Rate", &taxRate)
+	if err != nil {
+		panic(err)
+	}
 
 	// ebt := revenue - expenses
 	// fmt.Println("Your EBT is:", ebt)
@@ -38,18 +49,34 @@ func main() {
 	// formattedString := fmt.Sprintf("Your profit is: %v \n", profit)
 	// now we can print formattedString using fmt.Println(formattedString) or fmt.Print(formattedString)
 
-	ebt, profit, ratio := calculateValues(revenue, expenses, taxRate)
-	fmt.Printf("Calculated EBT is %.2f \nCalculated Profit is %.2f \nRatio of EBT and Profit is %.2f\n ", ebt, profit, ratio)
+	ebt, profit, ratio, error := calculateValues(revenue, expenses, taxRate)
+	if error != nil {
+		panic(error)
+	}
+	fmt.Printf("Calculated EBT is %.2f \nCalculated Profit is %.2f \nRatio of EBT and Profit is %.2f\n", ebt, profit, ratio)
 }
 
-func printAndScan(text string, inputVar *float64) {
+func printAndScan(text string, inputVar *float64) error {
 	fmt.Printf("Enter %v:", text)
-	fmt.Scan(inputVar)
+	var input float64
+	fmt.Scan(&input)
+	if input <= 0 {
+		err := errors.New("invalid input value")
+		return err
+	}
+	*inputVar = input
+	return nil
+
 }
 
-func calculateValues(revenue, expenses, taxRate float64) (ebt float64, profit float64, ratio float64) {
+func calculateValues(revenue, expenses, taxRate float64) (ebt float64, profit float64, ratio float64, err error) {
 	ebt = revenue - expenses
 	profit = ebt * (1 - taxRate/100)
 	ratio = ebt / profit
-	return ebt, profit, ratio
+	formattedEbt := fmt.Sprintf("ebt = %.2f\nprofit = %.2f\nratio = %.2f\n", ebt, profit, ratio)
+	err = os.WriteFile("Calculations.txt", []byte(formattedEbt), 0644)
+	if err != nil {
+		return ebt, profit, ratio, err
+	}
+	return ebt, profit, ratio, nil
 }
