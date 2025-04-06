@@ -25,11 +25,11 @@ func New(title, content string) (*Note, error) {
 		CreatedAt: time.Now(),
 	}, nil
 }
-func (n *Note) DisplayNote() {
-	fmt.Printf("\n\ntitle:%v \ncontent: %v \n\n\ncreatedAt:%v", n.Title, n.Content, n.CreatedAt)
+func (n *Note) Display() {
+	fmt.Printf("\n\ntitle:%v \ncontent: %v \n\n\ncreatedAt:%v\n\n", n.Title, n.Content, n.CreatedAt)
 }
 
-func (note *Note) SaveNoteJson() (err error) {
+func (note *Note) Save() (err error) {
 	fileName := strings.ReplaceAll(note.Title, " ", "_")
 	fileName = strings.ToLower(fileName) + ".json"
 	json, err := json.Marshal(note)
