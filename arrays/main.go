@@ -17,7 +17,6 @@ func New(title string, id, price int) *Products {
 }
 
 func main() {
-
 	var hobbies [3]string = [3]string{"Coding", "Drawing", "Gaming"}
 	fmt.Println(hobbies)
 	fmt.Println(hobbies[0])
@@ -39,6 +38,10 @@ func main() {
 	fmt.Println(products)
 	newProduct = New("Mouse", 3, 120)
 	products = append(products, *newProduct)
+	fmt.Println(products)
+	brandedProducts := []Products{*New("Razer", 4, 290), *New("Nixon", 5, 390), *New("Gaia", 6, 490)}
+	// Spread operator to spread the elements of an array/slice/map
+	products = append(products, brandedProducts...)
 	fmt.Println(products)
 }
 
