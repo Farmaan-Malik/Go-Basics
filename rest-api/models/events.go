@@ -1,15 +1,13 @@
 package models
 
 import (
-	"encoding/json"
+	"example/rest-api/db"
 	"fmt"
-	"math/rand"
-	"os"
 	"time"
 )
 
 type Events struct {
-	ID          int       `json:"id"`
+	ID          int64     `json:"id"`
 	Name        string    `json:"name" binding:"required"`
 	Description string    `json:"description" binding:"required"`
 	Location    string    `json:"location" binding:"required"`
@@ -20,36 +18,55 @@ type Events struct {
 var events = []Events{}
 
 func (e *Events) Save() error {
-	e.ID = len(events)
-	e.UserID = len(events) + rand.Intn(10)
-	e.DateTime = time.Now()
-	events = append(events, *e)
-	err := writeJson(events)
+	query := `
+	INSERT INTO events (name,description,location,dateTime,user_id)
+	VALUES (?,?,?,?,?)
+	`
+	sql, err := db.DB.Prepare(query)
 	if err != nil {
-		if len(events) > 0 {
-			events = events[:len(events)-1]
+		return err
+	}
+	defer sql.Close()
+	result, err := sql.Exec(e.Name, e.Description, e.Location, e.DateTime, e.UserID)
+	if err != nil {
+		return err
+	}
+	id, err := result.LastInsertId()
+	e.ID = id
+	return err
+}
+
+func GetAllEvents() ([]Events, error) {
+	query := `
+	SELECT * FROM events
+	`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var events []Events
+	for rows.Next() {
+		var e Events
+		err := rows.Scan(&e.ID, &e.Name, &e.Description, &e.Location, &e.DateTime, &e.UserID)
+		if err != nil {
+			return nil, err
 		}
-		fmt.Println(err)
-		return err
+		events = append(events, e)
 	}
-	fmt.Println(events)
-	return nil
+	return events, nil
 }
 
-func GetAllEvents() *[]Events {
-	return &events
-}
-
-func writeJson[T Events | []Events](e T) error {
-	jsonData, err := json.Marshal(e)
+func GetEventById(id int64) (*Events, error) {
+	fmt.Println("I am here")
+	query := `
+	SELECT * FROM events WHERE id = ?`
+	row := db.DB.QueryRow(query, id)
+	var e Events
+	err := row.Scan(&e.ID, &e.Name, &e.Description, &e.Location, &e.DateTime, &e.UserID)
 	if err != nil {
 		fmt.Println(err)
-		return err
+		return nil, err
 	}
-	err = os.WriteFile("events.json", jsonData, 0644)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
-	return nil
+	return &e, nil
 }
