@@ -46,3 +46,37 @@ func getEventById(ctx *gin.Context) {
 	}
 	ctx.JSON(200, gin.H{"status": "success", "data": data})
 }
+
+func updateEvent(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		fmt.Println("here", err)
+		ctx.JSON(400, gin.H{"status": "failure", "error": "Could not parse event id"})
+		return
+	}
+	_, err = models.GetEventById(id)
+	if err != nil {
+		fmt.Println("here 2", err)
+
+		ctx.JSON(500, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		return
+	}
+	var updatedEvent models.Events
+	err = ctx.ShouldBindJSON(&updatedEvent)
+	if err != nil {
+		fmt.Println("here 3", err)
+
+		ctx.JSON(400, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		return
+	}
+	updatedEvent.ID = id
+	err = updatedEvent.UpdateEvent()
+	if err != nil {
+		ctx.JSON(500, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		return
+	}
+	ctx.JSON(200, gin.H{"status": "success", "data": "Event updated successfully!"})
+
+}
+
+

@@ -14,7 +14,7 @@ type Events struct {
 	DateTime    time.Time `json:"date_time"`
 	UserID      int       `json:"user_id"`
 }
- 
+
 func (e *Events) Save() error {
 	query := `
 	INSERT INTO events (name,description,location,dateTime,user_id)
@@ -67,4 +67,20 @@ func GetEventById(id int64) (*Events, error) {
 		return nil, err
 	}
 	return &e, nil
+}
+
+func (e *Events) UpdateEvent() error {
+	query := `
+	UPDATE events 
+	SET name=?,description=?,location=?,dateTime=?
+	WHERE id = ?
+	`
+	_, err := db.DB.Exec(query, e.Name, e.Description, e.Location, e.DateTime, e.ID)
+
+	if err != nil {
+		fmt.Println("in Function")
+		fmt.Println(err)
+		return err
+	}
+	return nil
 }
