@@ -84,3 +84,16 @@ func (e *Events) UpdateEvent() error {
 	}
 	return nil
 }
+
+func (e *Events) DeletEvent() error {
+	query := `
+	DELETE FROM events WHERE id = ?
+	`
+	_, err := db.DB.Exec(query, e.ID)
+	if err != nil {
+		fmt.Println("in Function")
+		fmt.Println(err)
+		return err
+	}
+	return nil
+}

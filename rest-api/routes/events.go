@@ -58,7 +58,7 @@ func updateEvent(ctx *gin.Context) {
 	if err != nil {
 		fmt.Println("here 2", err)
 
-		ctx.JSON(500, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		ctx.JSON(404, gin.H{"status": "failure", "error": fmt.Sprint(err)})
 		return
 	}
 	var updatedEvent models.Events
@@ -79,4 +79,24 @@ func updateEvent(ctx *gin.Context) {
 
 }
 
+func deleteEvent(ctx *gin.Context) {
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	if err != nil {
+		ctx.JSON(500, gin.H{"status": "failure", "error": "Could not parse id"})
+		return
+	}
+	_, err = models.GetEventById(id)
+	if err != nil {
+		ctx.JSON(404, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		return
+	}
+	var event models.Events
+	event.ID = id
+	err = event.DeletEvent()
+	if err != nil {
+		ctx.JSON(500, gin.H{"status": "failure", "error": fmt.Sprint(err)})
+		return
+	}
+	ctx.JSON(200, gin.H{"status": "success", "data": "Event Deleted successfully!"})
 
+}
