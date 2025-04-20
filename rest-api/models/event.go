@@ -14,9 +14,7 @@ type Events struct {
 	DateTime    time.Time `json:"date_time"`
 	UserID      int       `json:"user_id"`
 }
-
-var events = []Events{}
-
+ 
 func (e *Events) Save() error {
 	query := `
 	INSERT INTO events (name,description,location,dateTime,user_id)

@@ -2,7 +2,7 @@ POST http://localhost:8080/events
 Content-Type: application/json
 
 {
-    "Name":"Test Meetup 5",
+    "Name":"Test Meetup 6",
     "Description":"Go meetup again",
     "location":"Srinagar"
 }
