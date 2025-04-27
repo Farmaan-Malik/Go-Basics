@@ -1,8 +1,9 @@
 POST http://localhost:8080/events
 Content-Type: application/json
+authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImZhcm1hYW5tYWxpazJAZ21haWwuY29tIiwiZXhwIjoxNzQ1NjU3Mzk0LCJ1c2VySWQiOjJ9.8_UJr65ufGmdzvL6cu4cfK7vJUIMCctWBFaD3uxHGEo
 
 {
-    "Name":"Test Meetup 6",
+    "Name":"Test Meetup 2",
     "Description":"Go meetup again",
     "location":"Srinagar"
 }

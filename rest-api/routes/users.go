@@ -43,5 +43,5 @@ func userLogin(ctx *gin.Context) {
 		ctx.JSON(401, gin.H{"status": "failure", "message": "could not create token"})
 		return
 	}
-	ctx.JSON(200, gin.H{"message": "Logged in successfully!", "data": token})
+	ctx.JSON(200, gin.H{"message": "Logged in successfully!", "token": token})
 }

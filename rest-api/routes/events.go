@@ -18,12 +18,15 @@ func getEvents(ctx *gin.Context) {
 }
 
 func createEvent(ctx *gin.Context) {
+
 	var event models.Events
 	err := ctx.ShouldBindJSON(&event)
 	if err != nil {
 		ctx.JSON(400, gin.H{"status": "failure", "error": fmt.Sprint(err)})
 		return
 	}
+	id := ctx.GetInt64("userId")
+	event.UserID = id
 	err = event.Save()
 	if err != nil {
 		ctx.JSON(400, gin.H{"status": "failure", "error": fmt.Sprint(err)})
