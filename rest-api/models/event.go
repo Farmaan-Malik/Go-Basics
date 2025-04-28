@@ -18,7 +18,7 @@ type Events struct {
 type Registration struct {
 	ID      int64 `json:"id"`
 	UserID  int64 `json:"user_id"`
-	EventId int64 `json:event_id`
+	EventId int64 `json:"event_id"`
 }
 
 func (e *Events) Save() error {
