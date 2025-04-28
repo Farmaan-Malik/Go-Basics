@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"example/rest-api/db"
 	"fmt"
 	"time"
@@ -13,6 +14,11 @@ type Events struct {
 	Location    string    `json:"location" binding:"required"`
 	DateTime    time.Time `json:"date_time"`
 	UserID      int64     `json:"user_id"`
+}
+type Registration struct {
+	ID      int64 `json:"id"`
+	UserID  int64 `json:"user_id"`
+	EventId int64 `json:event_id`
 }
 
 func (e *Events) Save() error {
@@ -94,4 +100,40 @@ func (e *Events) DeletEvent() error {
 		return err
 	}
 	return nil
+}
+func (e *Events) MakeRegistration(userId int64) error {
+	query := `
+	INSERT INTO registrations (user_id,event_id) VALUES (?,?)`
+	_, err := db.DB.Exec(query, userId, e.ID)
+	if err != nil {
+		return errors.New("could not create entry")
+	}
+	return nil
+}
+
+func (e *Events) DeleteRegistration(userId int64) error {
+	query := `DELETE FROM registrations WHERE event_id = ? AND user_id = ?`
+	_, err := db.DB.Exec(query, e.ID, userId)
+	if err != nil {
+		return errors.New("could not find entry")
+	}
+	return nil
+}
+func GetRegistrations() ([]Registration, error) {
+	query := `SELECT * FROM registrations`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, errors.New("error fetching data")
+	}
+	defer rows.Close()
+	var registrations []Registration
+	for rows.Next() {
+		var r Registration
+		err = rows.Scan(&r.ID, &r.EventId, &r.UserID)
+		if err != nil {
+			return nil, err
+		}
+		registrations = append(registrations, r)
+	}
+	return registrations, nil
 }
